@@ -7,7 +7,8 @@ import Foundation
 
 final class NetworkService {
     static let shared = NetworkService()
-    private let baseURL = "https://rickandmortyapi.com/api/character"
+
+    private let baseURL = "https://rickandmortyapi.com/api"
     private let session: URLSession
 
     private init() {
@@ -17,7 +18,19 @@ final class NetworkService {
     }
 
     func fetchCharacters(page: Int = 1) async throws -> APIResponse {
-        guard var components = URLComponents(string: baseURL) else {
+        try await fetch(endpoint: "character", page: page)
+    }
+
+    func fetchLocations(page: Int = 1) async throws -> LocationResponse {
+        try await fetch(endpoint: "location", page: page)
+    }
+
+    func fetchEpisodes(page: Int = 1) async throws -> EpisodeResponse {
+        try await fetch(endpoint: "episode", page: page)
+    }
+
+    private func fetch<T: Decodable>(endpoint: String, page: Int) async throws -> T {
+        guard var components = URLComponents(string: "\(baseURL)/\(endpoint)") else {
             throw NetworkError.invalidURL
         }
         components.queryItems = [URLQueryItem(name: "page", value: "\(page)")]
@@ -33,8 +46,7 @@ final class NetworkService {
             throw NetworkError.serverError
         }
 
-        let decoded = try JSONDecoder().decode(APIResponse.self, from: data)
-        return decoded
+        return try JSONDecoder().decode(T.self, from: data)
     }
 }
 

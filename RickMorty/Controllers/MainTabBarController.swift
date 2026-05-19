@@ -22,8 +22,7 @@ final class MainTabBarController: UITabBarController {
             selectedImage: UIImage(systemName: "person.2.fill")
         )
 
-        let locationsVC = UIViewController()
-        locationsVC.view.backgroundColor = .systemBackground
+        let locationsVC = LocationsViewController()
         let locationsNav = UINavigationController(rootViewController: locationsVC)
         locationsNav.tabBarItem = UITabBarItem(
             title: "Locations",
@@ -31,16 +30,15 @@ final class MainTabBarController: UITabBarController {
             selectedImage: UIImage(systemName: "globe.americas.fill")
         )
 
-        let favoritesVC = UIViewController()
-        favoritesVC.view.backgroundColor = .systemBackground
-        let favoritesNav = UINavigationController(rootViewController: favoritesVC)
-        favoritesNav.tabBarItem = UITabBarItem(
-            title: "Favorites",
-            image: UIImage(systemName: "heart"),
-            selectedImage: UIImage(systemName: "heart.fill")
+        let episodesVC = EpisodesViewController()
+        let episodesNav = UINavigationController(rootViewController: episodesVC)
+        episodesNav.tabBarItem = UITabBarItem(
+            title: "Episodes",
+            image: UIImage(systemName: "play.tv"),
+            selectedImage: UIImage(systemName: "play.tv.fill")
         )
 
-        viewControllers = [charactersNav, locationsNav, favoritesNav]
+        viewControllers = [charactersNav, locationsNav, episodesNav]
         selectedIndex = 0
     }
 

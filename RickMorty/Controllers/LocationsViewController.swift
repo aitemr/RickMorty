@@ -1,44 +1,36 @@
 //
-//  CharactersViewController.swift
+//  LocationsViewController.swift
 //  RickMorty
 //
 
 @preconcurrency import UIKit
 
-nonisolated private enum CharacterSection: Int, Hashable, Sendable {
+nonisolated private enum LocationSection: Int, Hashable, Sendable {
     case main
 }
 
-final class CharactersViewController: UIViewController {
+final class LocationsViewController: UIViewController {
 
     // MARK: - Properties
 
-    private var characters: [RMCharacter] = []
+    private var locations: [RMLocation] = []
     private var currentPage = 1
     private var totalPages = 1
     private var isLoading = false
 
-    private var dataSource: UICollectionViewDiffableDataSource<CharacterSection, RMCharacter>!
+    private var dataSource: UICollectionViewDiffableDataSource<LocationSection, RMLocation>!
     private var collectionView: UICollectionView!
 
     // MARK: - UI Elements
 
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "The Rick and Morty\nDimension Guide"
-        label.numberOfLines = 2
+        label.text = "Locations"
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 24, weight: .black)
         label.textColor = .label
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
-    }()
-
-    private let segmentedControl: UISegmentedControl = {
-        let sc = UISegmentedControl(items: ["CHARACTERS", "LOCATIONS"])
-        sc.selectedSegmentIndex = 0
-        sc.translatesAutoresizingMaskIntoConstraints = false
-        return sc
     }()
 
     // MARK: - Lifecycle
@@ -51,24 +43,18 @@ final class CharactersViewController: UIViewController {
         setupHeader()
         setupCollectionView()
         configureDataSource()
-        loadCharacters()
+        loadLocations()
     }
 
     // MARK: - Setup Header
 
     private func setupHeader() {
         view.addSubview(titleLabel)
-        view.addSubview(segmentedControl)
 
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-
-            segmentedControl.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
-            segmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            segmentedControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            segmentedControl.heightAnchor.constraint(equalToConstant: 36),
         ])
     }
 
@@ -79,11 +65,11 @@ final class CharactersViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = .clear
         collectionView.delegate = self
-        collectionView.register(CharacterCell.self, forCellWithReuseIdentifier: CharacterCell.reuseIdentifier)
+        collectionView.register(LocationCell.self, forCellWithReuseIdentifier: LocationCell.reuseIdentifier)
         view.addSubview(collectionView)
 
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: segmentedControl.bottomAnchor, constant: 16),
+            collectionView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -93,13 +79,13 @@ final class CharactersViewController: UIViewController {
     private func createLayout() -> UICollectionViewCompositionalLayout {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(0.5),
-            heightDimension: .estimated(240)
+            heightDimension: .estimated(180)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
-            heightDimension: .estimated(240)
+            heightDimension: .estimated(180)
         )
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, repeatingSubitem: item, count: 2)
         group.interItemSpacing = .fixed(12)
@@ -114,42 +100,42 @@ final class CharactersViewController: UIViewController {
     // MARK: - Data Source
 
     private func configureDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<CharacterSection, RMCharacter>(
+        dataSource = UICollectionViewDiffableDataSource<LocationSection, RMLocation>(
             collectionView: collectionView
-        ) { (collectionView: UICollectionView, indexPath: IndexPath, character: RMCharacter) -> UICollectionViewCell? in
+        ) { (collectionView: UICollectionView, indexPath: IndexPath, location: RMLocation) -> UICollectionViewCell? in
             guard let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: CharacterCell.reuseIdentifier,
+                withReuseIdentifier: LocationCell.reuseIdentifier,
                 for: indexPath
-            ) as? CharacterCell else {
+            ) as? LocationCell else {
                 return UICollectionViewCell()
             }
-            cell.configure(with: character)
+            cell.configure(with: location)
             return cell
         }
     }
 
     private func applySnapshot() {
-        var snapshot = NSDiffableDataSourceSnapshot<CharacterSection, RMCharacter>()
+        var snapshot = NSDiffableDataSourceSnapshot<LocationSection, RMLocation>()
         snapshot.appendSections([.main])
-        snapshot.appendItems(characters)
+        snapshot.appendItems(locations)
         dataSource.apply(snapshot, animatingDifferences: true)
     }
 
     // MARK: - Networking
 
-    private func loadCharacters() {
+    private func loadLocations() {
         guard !isLoading, currentPage <= totalPages else { return }
         isLoading = true
 
         Task {
             do {
-                let response = try await NetworkService.shared.fetchCharacters(page: currentPage)
+                let response = try await NetworkService.shared.fetchLocations(page: currentPage)
                 totalPages = response.info.pages
-                characters.append(contentsOf: response.results)
+                locations.append(contentsOf: response.results)
                 applySnapshot()
                 currentPage += 1
             } catch {
-                if characters.isEmpty {
+                if locations.isEmpty {
                     showError(error)
                 }
             }
@@ -170,7 +156,7 @@ final class CharactersViewController: UIViewController {
 
 // MARK: - UICollectionViewDelegate
 
-extension CharactersViewController: UICollectionViewDelegate {
+extension LocationsViewController: UICollectionViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
@@ -179,7 +165,7 @@ extension CharactersViewController: UICollectionViewDelegate {
         guard contentHeight > 0, offsetY > 0 else { return }
 
         if offsetY > contentHeight - frameHeight * 1.5 {
-            loadCharacters()
+            loadLocations()
         }
     }
 }

@@ -5,19 +5,19 @@
 
 import Foundation
 
-struct APIResponse: Decodable {
+nonisolated struct APIResponse: Decodable, Sendable {
     let info: APIInfo
     let results: [RMCharacter]
 }
 
-struct APIInfo: Decodable {
+nonisolated struct APIInfo: Decodable, Sendable {
     let count: Int
     let pages: Int
     let next: String?
     let prev: String?
 }
 
-struct RMCharacter: Decodable, Hashable {
+nonisolated struct RMCharacter: Decodable, Hashable, Sendable {
     let id: Int
     let name: String
     let status: Status
@@ -31,13 +31,21 @@ struct RMCharacter: Decodable, Hashable {
     let url: String
     let created: String
 
-    enum Status: String, Decodable {
+    static func == (lhs: RMCharacter, rhs: RMCharacter) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    nonisolated enum Status: String, Decodable, Sendable {
         case alive = "Alive"
         case dead = "Dead"
         case unknown
     }
 
-    struct Location: Decodable, Hashable {
+    nonisolated struct Location: Decodable, Hashable, Sendable {
         let name: String
         let url: String
     }
