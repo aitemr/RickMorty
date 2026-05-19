@@ -112,6 +112,10 @@ final class EpisodeCell: UICollectionViewCell {
         nameLabel.text = episode.name
         airDateLabel.text = episode.airDate
         charactersLabel.text = "\(episode.characters.count) characters"
+
+        isAccessibilityElement = true
+        accessibilityLabel = "\(episode.name), \(episode.episode)"
+        accessibilityTraits = .button
     }
 
     override func prepareForReuse() {

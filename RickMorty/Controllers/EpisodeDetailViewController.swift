@@ -157,6 +157,7 @@ final class EpisodeDetailViewController: UIViewController {
         let config = UIImage.SymbolConfiguration(pointSize: 24, weight: .medium)
         let image = UIImage(systemName: isFav ? "heart.fill" : "heart", withConfiguration: config)
         favoriteButton.setImage(image, for: .normal)
+        favoriteButton.accessibilityLabel = isFav ? "Remove from favorites" : "Add to favorites"
     }
 
     private func createInfoRow(title: String, value: String) -> UIView {

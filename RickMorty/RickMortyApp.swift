@@ -10,10 +10,19 @@ import UIKit
 
 @main
 struct RickMortyApp: App {
+    @AppStorage("hasSelectedMode") private var hasSelectedMode = false
+    @AppStorage("useSwiftUI") private var useSwiftUI = true
+
     var body: some Scene {
         WindowGroup {
-            MainTabBarRepresentable()
-                .ignoresSafeArea()
+            if !hasSelectedMode {
+                AppModeSelector()
+            } else if useSwiftUI {
+                SwiftUIMainTabView()
+            } else {
+                MainTabBarRepresentable()
+                    .ignoresSafeArea()
+            }
         }
     }
 }

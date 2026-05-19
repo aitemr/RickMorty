@@ -138,6 +138,10 @@ final class LocationCell: UICollectionViewCell {
         typeLabel.text = location.type
         dimensionLabel.text = location.dimension
         residentsLabel.text = "\(location.residents.count) residents"
+
+        isAccessibilityElement = true
+        accessibilityLabel = "\(location.name), \(location.type)"
+        accessibilityTraits = .button
     }
 
     override func prepareForReuse() {

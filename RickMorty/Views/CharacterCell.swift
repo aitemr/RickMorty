@@ -119,6 +119,10 @@ final class CharacterCell: UICollectionViewCell {
         nameLabel.text = character.name
         configureBadge(status: character.status)
         loadImage(urlString: character.image)
+
+        isAccessibilityElement = true
+        accessibilityLabel = "\(character.name), \(character.status.rawValue)"
+        accessibilityTraits = .button
     }
 
     private func configureBadge(status: RMCharacter.Status) {

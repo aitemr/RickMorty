@@ -29,9 +29,33 @@
 		6DFE8C632FBCB357002D5BCD /* RickMortyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RickMortyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		6DFE8CCB2FBCBE22002D5BCD /* Exceptions for "RickMorty" folder in "RickMorty" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				README.md,
+			);
+			target = 6DFE8C492FBCB356002D5BCD /* RickMorty */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		6DFE8CCC2FBCBE22002D5BCD /* Exceptions for "RickMorty" folder in "Compile Sources" phase from "RickMorty" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 6DFE8C462FBCB356002D5BCD /* Sources */;
+			membershipExceptions = (
+				README.md,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		6DFE8C4C2FBCB356002D5BCD /* RickMorty */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				6DFE8CCB2FBCBE22002D5BCD /* Exceptions for "RickMorty" folder in "RickMorty" target */,
+				6DFE8CCC2FBCBE22002D5BCD /* Exceptions for "RickMorty" folder in "Compile Sources" phase from "RickMorty" target */,
+			);
 			path = RickMorty;
 			sourceTree = "<group>";
 		};
