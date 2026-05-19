@@ -12,17 +12,38 @@ import UIKit
 struct RickMortyApp: App {
     @AppStorage("hasSelectedMode") private var hasSelectedMode = false
     @AppStorage("useSwiftUI") private var useSwiftUI = true
+    @State private var showLaunchScreen = true
 
     var body: some Scene {
         WindowGroup {
-            if !hasSelectedMode {
-                AppModeSelector()
-            } else if useSwiftUI {
-                SwiftUIMainTabView()
-            } else {
-                MainTabBarRepresentable()
-                    .ignoresSafeArea()
+            ZStack {
+                mainContent
+
+                if showLaunchScreen {
+                    LaunchScreenView()
+                        .transition(.opacity)
+                        .zIndex(1)
+                }
             }
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
+                    withAnimation(.easeInOut(duration: 0.4)) {
+                        showLaunchScreen = false
+                    }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var mainContent: some View {
+        if !hasSelectedMode {
+            AppModeSelector()
+        } else if useSwiftUI {
+            SwiftUIMainTabView()
+        } else {
+            MainTabBarRepresentable()
+                .ignoresSafeArea()
         }
     }
 }
