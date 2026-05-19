@@ -12,7 +12,7 @@ final class LocationCell: UICollectionViewCell {
 
     private let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = .secondarySystemGroupedBackground
         view.layer.cornerRadius = 16
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOpacity = 0.1
@@ -25,7 +25,7 @@ final class LocationCell: UICollectionViewCell {
 
     private let iconContainer: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemBlue.withAlphaComponent(0.1)
+        view.backgroundColor = UIColor(red: 0.2, green: 0.5, blue: 0.3, alpha: 0.1)
         view.layer.cornerRadius = 24
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -69,7 +69,7 @@ final class LocationCell: UICollectionViewCell {
     private let residentsLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 11, weight: .medium)
-        label.textColor = .systemBlue
+        label.textColor = UIColor(red: 0.2, green: 0.5, blue: 0.3, alpha: 1.0)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()

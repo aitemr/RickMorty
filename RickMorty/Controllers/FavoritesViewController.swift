@@ -295,7 +295,7 @@ final class FavLocationCell: UICollectionViewCell {
 
     private let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = .secondarySystemGroupedBackground
         view.layer.cornerRadius = 16
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOpacity = 0.1
@@ -308,7 +308,7 @@ final class FavLocationCell: UICollectionViewCell {
     private let iconView: UIImageView = {
         let iv = UIImageView()
         iv.image = UIImage(systemName: "globe.americas.fill")
-        iv.tintColor = .systemBlue
+        iv.tintColor = UIColor(red: 0.2, green: 0.5, blue: 0.3, alpha: 1.0)
         iv.contentMode = .scaleAspectFit
         iv.translatesAutoresizingMaskIntoConstraints = false
         return iv
@@ -381,7 +381,7 @@ final class FavEpisodeCell: UICollectionViewCell {
 
     private let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = .secondarySystemGroupedBackground
         view.layer.cornerRadius = 16
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOpacity = 0.1
@@ -396,7 +396,7 @@ final class FavEpisodeCell: UICollectionViewCell {
         label.font = .systemFont(ofSize: 12, weight: .bold)
         label.textColor = .white
         label.textAlignment = .center
-        label.backgroundColor = .systemPurple
+        label.backgroundColor = UIColor(red: 0.2, green: 0.5, blue: 0.3, alpha: 1.0)
         label.layer.cornerRadius = 8
         label.clipsToBounds = true
         label.translatesAutoresizingMaskIntoConstraints = false

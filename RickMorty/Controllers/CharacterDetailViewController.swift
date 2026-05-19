@@ -88,6 +88,7 @@ final class CharacterDetailViewController: UIViewController {
 
         setupUI()
         configure()
+        prepareForEntrance()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -232,24 +233,26 @@ final class CharacterDetailViewController: UIViewController {
 
     // MARK: - Animation
 
-    private func animateEntrance() {
+    private func prepareForEntrance() {
         heroImageView.alpha = 0
-        heroImageView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+        heroImageView.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
         nameLabel.alpha = 0
-        nameLabel.transform = CGAffineTransform(translationX: 0, y: 20)
+        nameLabel.transform = CGAffineTransform(translationX: 0, y: 15)
         statusBadge.alpha = 0
-        statusBadge.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+        statusBadge.transform = CGAffineTransform(scaleX: 0.6, y: 0.6)
         favoriteButton.alpha = 0
+    }
 
+    private func animateEntrance() {
         for (index, subview) in infoStackView.arrangedSubviews.enumerated() {
             subview.alpha = 0
-            subview.transform = CGAffineTransform(translationX: 0, y: 20)
+            subview.transform = CGAffineTransform(translationX: 0, y: 15)
 
             UIView.animate(
-                withDuration: 0.5,
-                delay: 0.3 + Double(index) * 0.08,
-                usingSpringWithDamping: 0.8,
-                initialSpringVelocity: 0,
+                withDuration: 0.45,
+                delay: 0.25 + Double(index) * 0.06,
+                usingSpringWithDamping: 0.85,
+                initialSpringVelocity: 0.3,
                 options: .curveEaseOut
             ) {
                 subview.alpha = 1
@@ -258,10 +261,10 @@ final class CharacterDetailViewController: UIViewController {
         }
 
         UIView.animate(
-            withDuration: 0.6,
+            withDuration: 0.5,
             delay: 0,
-            usingSpringWithDamping: 0.8,
-            initialSpringVelocity: 0,
+            usingSpringWithDamping: 0.85,
+            initialSpringVelocity: 0.3,
             options: .curveEaseOut
         ) {
             self.heroImageView.alpha = 1
@@ -269,10 +272,10 @@ final class CharacterDetailViewController: UIViewController {
         }
 
         UIView.animate(
-            withDuration: 0.5,
-            delay: 0.15,
-            usingSpringWithDamping: 0.7,
-            initialSpringVelocity: 0,
+            withDuration: 0.4,
+            delay: 0.1,
+            usingSpringWithDamping: 0.8,
+            initialSpringVelocity: 0.3,
             options: .curveEaseOut
         ) {
             self.statusBadge.alpha = 1
@@ -281,10 +284,10 @@ final class CharacterDetailViewController: UIViewController {
         }
 
         UIView.animate(
-            withDuration: 0.5,
-            delay: 0.2,
-            usingSpringWithDamping: 0.8,
-            initialSpringVelocity: 0,
+            withDuration: 0.4,
+            delay: 0.15,
+            usingSpringWithDamping: 0.85,
+            initialSpringVelocity: 0.3,
             options: .curveEaseOut
         ) {
             self.nameLabel.alpha = 1

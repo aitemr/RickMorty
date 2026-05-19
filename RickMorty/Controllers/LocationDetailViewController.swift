@@ -25,7 +25,7 @@ final class LocationDetailViewController: UIViewController {
 
     private let iconContainer: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemBlue.withAlphaComponent(0.1)
+        view.backgroundColor = UIColor(red: 0.2, green: 0.5, blue: 0.3, alpha: 0.1)
         view.layer.cornerRadius = 40
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -34,7 +34,7 @@ final class LocationDetailViewController: UIViewController {
     private let iconImageView: UIImageView = {
         let iv = UIImageView()
         iv.image = UIImage(systemName: "globe.americas.fill")
-        iv.tintColor = .systemBlue
+        iv.tintColor = UIColor(red: 0.2, green: 0.5, blue: 0.3, alpha: 1.0)
         iv.contentMode = .scaleAspectFit
         iv.translatesAutoresizingMaskIntoConstraints = false
         return iv
@@ -86,6 +86,7 @@ final class LocationDetailViewController: UIViewController {
 
         setupUI()
         configure()
+        prepareForEntrance()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -206,28 +207,30 @@ final class LocationDetailViewController: UIViewController {
 
     // MARK: - Animation
 
-    private func animateEntrance() {
+    private func prepareForEntrance() {
         iconContainer.alpha = 0
-        iconContainer.transform = CGAffineTransform(scaleX: 0.3, y: 0.3)
+        iconContainer.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
         nameLabel.alpha = 0
-        nameLabel.transform = CGAffineTransform(translationX: 0, y: 20)
+        nameLabel.transform = CGAffineTransform(translationX: 0, y: 15)
         favoriteButton.alpha = 0
+    }
 
+    private func animateEntrance() {
         for (index, subview) in infoStackView.arrangedSubviews.enumerated() {
             subview.alpha = 0
-            subview.transform = CGAffineTransform(translationX: 0, y: 20)
-            UIView.animate(withDuration: 0.5, delay: 0.3 + Double(index) * 0.08, usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: .curveEaseOut) {
+            subview.transform = CGAffineTransform(translationX: 0, y: 15)
+            UIView.animate(withDuration: 0.45, delay: 0.25 + Double(index) * 0.06, usingSpringWithDamping: 0.85, initialSpringVelocity: 0.3, options: .curveEaseOut) {
                 subview.alpha = 1
                 subview.transform = .identity
             }
         }
 
-        UIView.animate(withDuration: 0.6, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0, options: .curveEaseOut) {
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.3, options: .curveEaseOut) {
             self.iconContainer.alpha = 1
             self.iconContainer.transform = .identity
         }
 
-        UIView.animate(withDuration: 0.5, delay: 0.15, usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: .curveEaseOut) {
+        UIView.animate(withDuration: 0.4, delay: 0.1, usingSpringWithDamping: 0.85, initialSpringVelocity: 0.3, options: .curveEaseOut) {
             self.nameLabel.alpha = 1
             self.nameLabel.transform = .identity
             self.favoriteButton.alpha = 1

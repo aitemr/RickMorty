@@ -12,7 +12,7 @@ final class EpisodeCell: UICollectionViewCell {
 
     private let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = .secondarySystemGroupedBackground
         view.layer.cornerRadius = 16
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOpacity = 0.1
@@ -28,7 +28,7 @@ final class EpisodeCell: UICollectionViewCell {
         label.font = .systemFont(ofSize: 13, weight: .bold)
         label.textColor = .white
         label.textAlignment = .center
-        label.backgroundColor = .systemPurple
+        label.backgroundColor = UIColor(red: 0.2, green: 0.5, blue: 0.3, alpha: 1.0)
         label.layer.cornerRadius = 8
         label.clipsToBounds = true
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -55,7 +55,7 @@ final class EpisodeCell: UICollectionViewCell {
     private let charactersLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 11, weight: .medium)
-        label.textColor = .systemPurple
+        label.textColor = UIColor(red: 0.2, green: 0.5, blue: 0.3, alpha: 1.0)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()

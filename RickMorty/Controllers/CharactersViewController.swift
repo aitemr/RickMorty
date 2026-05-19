@@ -3,6 +3,13 @@
 //  RickMorty
 //
 
+// TODO:
+// 1. add placeholder for them empty images
+// 2. add loader, empty state pages when no data
+// 3. loading when pagation
+// 4 make on swiftui
+// 5. make refatoring, make with HIG & Apple architecture guidlines
+// 6. add documentation how project works in russian
 @preconcurrency import UIKit
 
 nonisolated private enum CharacterSection: Int, Hashable, Sendable {
@@ -25,12 +32,55 @@ final class CharactersViewController: UIViewController {
 
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "The Rick and Morty\nDimension Guide"
         label.numberOfLines = 2
         label.textAlignment = .center
-        label.font = .systemFont(ofSize: 24, weight: .black)
-        label.textColor = .label
         label.translatesAutoresizingMaskIntoConstraints = false
+
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = .center
+        paragraph.lineSpacing = 2
+
+        let line1 = NSMutableAttributedString(
+            string: "The ",
+            attributes: [
+                .font: UIFont.systemFont(ofSize: 22, weight: .bold),
+                .foregroundColor: UIColor.label,
+                .paragraphStyle: paragraph,
+            ]
+        )
+        if let italicBoldDescriptor = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .title2)
+            .withSymbolicTraits([.traitBold, .traitItalic]) {
+            let italicBoldFont = UIFont(descriptor: italicBoldDescriptor, size: 24)
+            line1.append(NSAttributedString(
+                string: "Rick and Morty",
+                attributes: [
+                    .font: italicBoldFont,
+                    .foregroundColor: UIColor(red: 0.2, green: 0.5, blue: 0.3, alpha: 1.0),
+                ]
+            ))
+        } else {
+            line1.append(NSAttributedString(
+                string: "Rick and Morty",
+                attributes: [
+                    .font: UIFont.systemFont(ofSize: 24, weight: .black),
+                    .foregroundColor: UIColor(red: 0.2, green: 0.5, blue: 0.3, alpha: 1.0),
+                ]
+            ))
+        }
+
+        let line2 = NSAttributedString(
+            string: "\nDIMENSION GUIDE",
+            attributes: [
+                .font: UIFont.systemFont(ofSize: 13, weight: .bold),
+                .foregroundColor: UIColor.secondaryLabel,
+                .kern: 3.0,
+                .paragraphStyle: paragraph,
+            ]
+        )
+
+        line1.append(line2)
+        label.attributedText = line1
+
         return label
     }()
 
@@ -38,6 +88,18 @@ final class CharactersViewController: UIViewController {
         let sc = UISegmentedControl(items: ["CHARACTERS", "LOCATIONS"])
         sc.selectedSegmentIndex = 0
         sc.translatesAutoresizingMaskIntoConstraints = false
+
+        let greenColor = UIColor(red: 0.2, green: 0.5, blue: 0.3, alpha: 1.0)
+        sc.selectedSegmentTintColor = greenColor
+        sc.setTitleTextAttributes([
+            .foregroundColor: UIColor.white,
+            .font: UIFont.systemFont(ofSize: 13, weight: .bold),
+        ], for: .selected)
+        sc.setTitleTextAttributes([
+            .foregroundColor: UIColor.secondaryLabel,
+            .font: UIFont.systemFont(ofSize: 13, weight: .medium),
+        ], for: .normal)
+
         return sc
     }()
 
