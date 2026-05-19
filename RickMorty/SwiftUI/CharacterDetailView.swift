@@ -10,6 +10,7 @@ struct CharacterDetailView: View {
     var heroNamespace: Namespace.ID?
     @State private var isFavorite: Bool
     @State private var appeared = false
+    private var loc = LocalizationManager.shared
 
     init(character: RMCharacter, heroNamespace: Namespace.ID? = nil) {
         self.character = character
@@ -76,7 +77,7 @@ struct CharacterDetailView: View {
                         .foregroundStyle(.red)
                         .contentTransition(.symbolEffect(.replace))
                 }
-                .accessibilityLabel(isFavorite ? "Remove from favorites" : "Add to favorites")
+                .accessibilityLabel(isFavorite ? loc.string("a11y.removeFromFavorites") : loc.string("a11y.addToFavorites"))
             }
         }
         .background(Color(.systemBackground))
@@ -89,11 +90,11 @@ struct CharacterDetailView: View {
 
     private var infoRows: some View {
         let rows: [(String, String, String)] = [
-            ("dna", "Species", character.species),
-            ("figure.stand", "Gender", character.gender),
-            ("globe", "Origin", character.origin.name),
-            ("mappin.and.ellipse", "Location", character.location.name),
-            ("play.tv", "Episodes", "\(character.episode.count) episode(s)"),
+            ("dna", loc.string("detail.species"), character.species),
+            ("figure.stand", loc.string("detail.gender"), character.gender),
+            ("globe", loc.string("detail.origin"), character.origin.name),
+            ("mappin.and.ellipse", loc.string("detail.location"), character.location.name),
+            ("play.tv", loc.string("detail.episodes"), "\(character.episode.count) \(loc.string("detail.episodes.count"))"),
         ]
 
         return VStack(spacing: 12) {

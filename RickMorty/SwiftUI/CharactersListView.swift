@@ -10,6 +10,7 @@ struct CharactersListView: View {
     @State private var selectedFilter = 0
     @State private var searchText = ""
     @Namespace private var heroNamespace
+    private var loc = LocalizationManager.shared
 
     private let columns = [
         GridItem(.flexible(), spacing: 12),
@@ -72,28 +73,28 @@ struct CharactersListView: View {
 
     private var headerView: some View {
         VStack(spacing: 12) {
-            (Text("The ")
+            (Text(loc.string("characters.title.the"))
                 .font(.system(size: 22, weight: .bold))
                 .foregroundColor(Color(.label))
-            + Text("Rick and Morty")
+            + Text(loc.string("characters.title.name"))
                 .font(.system(size: 24, weight: .heavy).italic())
                 .foregroundColor(Theme.accentSwiftUI)
             )
 
-            Text("DIMENSION GUIDE")
+            Text(loc.string("characters.subtitle"))
                 .font(.system(size: 13, weight: .bold))
                 .foregroundStyle(.secondary)
                 .tracking(3)
 
             Picker("Filter", selection: $selectedFilter) {
-                Text("ALL").tag(0)
-                Text("ALIVE").tag(1)
-                Text("DEAD").tag(2)
+                Text(loc.string("characters.filter.all")).tag(0)
+                Text(loc.string("characters.filter.alive")).tag(1)
+                Text(loc.string("characters.filter.dead")).tag(2)
             }
             .pickerStyle(.segmented)
             .padding(.horizontal, 16)
 
-            searchBar(prompt: "Search characters")
+            searchBar(prompt: loc.string("characters.search"))
         }
         .padding(.top, 8)
         .padding(.bottom, 12)
@@ -160,10 +161,10 @@ struct CharactersListView: View {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 44))
                 .foregroundStyle(.secondary)
-            Text("No results for \"\(searchText)\"")
+            Text("\(loc.string("search.noResults")) \"\(searchText)\"")
                 .font(.headline)
                 .foregroundStyle(.secondary)
-            Text("Try a different search term")
+            Text(loc.string("search.tryDifferent"))
                 .font(.subheadline)
                 .foregroundStyle(.tertiary)
         }
@@ -176,10 +177,10 @@ struct CharactersListView: View {
             Image(systemName: "wifi.slash")
                 .font(.system(size: 50))
                 .foregroundStyle(.gray)
-            Text("No data available")
+            Text(loc.string("empty.noData"))
                 .font(.headline)
                 .foregroundStyle(.secondary)
-            Button("Retry") {
+            Button(loc.string("empty.retry")) {
                 Task { await viewModel.retry() }
             }
             .buttonStyle(.borderedProminent)

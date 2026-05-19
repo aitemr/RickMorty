@@ -9,38 +9,49 @@ import StoreKit
 struct SettingsView: View {
     @Environment(\.requestReview) private var requestReview
     @AppStorage("useSwiftUI") private var useSwiftUI = true
+    private var loc = LocalizationManager.shared
 
     var body: some View {
         NavigationStack {
             List {
-                Section("Interface") {
+                Section(loc.string("settings.interface")) {
                     HStack {
                         settingsIcon("paintbrush.fill", color: .purple)
-                        Text("UI Mode")
+                        Text(loc.string("settings.uiMode"))
                         Spacer()
                         Text(useSwiftUI ? "SwiftUI" : "UIKit")
                             .foregroundStyle(.secondary)
                     }
-                    .accessibilityLabel("UI Mode: \(useSwiftUI ? "SwiftUI" : "UIKit")")
+                    .accessibilityLabel("\(loc.string("settings.uiMode")): \(useSwiftUI ? "SwiftUI" : "UIKit")")
 
                     Button {
                         useSwiftUI.toggle()
                     } label: {
                         HStack {
                             settingsIcon("arrow.triangle.2.circlepath", color: Theme.accentSwiftUI)
-                            Text("Switch to \(useSwiftUI ? "UIKit" : "SwiftUI")")
+                            Text("\(loc.string("settings.switchTo")) \(useSwiftUI ? "UIKit" : "SwiftUI")")
                                 .foregroundStyle(Color(.label))
+                        }
+                    }
+
+                    Picker(selection: Bindable(loc).language) {
+                        Text("English").tag("en")
+                        Text("Русский").tag("ru")
+                    } label: {
+                        HStack {
+                            settingsIcon("globe", color: .cyan)
+                            Text(loc.string("settings.language"))
                         }
                     }
                 }
 
-                Section("General") {
+                Section(loc.string("settings.general")) {
                     Button {
                         shareApp()
                     } label: {
                         HStack {
                             settingsIcon("square.and.arrow.up", color: .blue)
-                            Text("Share App")
+                            Text(loc.string("settings.shareApp"))
                                 .foregroundStyle(Color(.label))
                         }
                     }
@@ -50,7 +61,7 @@ struct SettingsView: View {
                     } label: {
                         HStack {
                             settingsIcon("star.fill", color: .yellow)
-                            Text("Rate Us")
+                            Text(loc.string("settings.rateUs"))
                                 .foregroundStyle(Color(.label))
                         }
                     }
@@ -60,17 +71,17 @@ struct SettingsView: View {
                     } label: {
                         HStack {
                             settingsIcon("heart.fill", color: .pink)
-                            Text("Support Us")
+                            Text(loc.string("settings.supportUs"))
                                 .foregroundStyle(Color(.label))
                         }
                     }
                 }
 
-                Section("Information") {
+                Section(loc.string("settings.information")) {
                     Link(destination: URL(string: "https://rickandmortyapi.com/about")!) {
                         HStack {
                             settingsIcon("lock.shield.fill", color: .green)
-                            Text("Privacy Policy")
+                            Text(loc.string("settings.privacyPolicy"))
                                 .foregroundStyle(Color(.label))
                         }
                     }
@@ -78,21 +89,21 @@ struct SettingsView: View {
                     Link(destination: URL(string: "mailto:support@rickandmorty.app")!) {
                         HStack {
                             settingsIcon("envelope.fill", color: .orange)
-                            Text("Contact Us")
+                            Text(loc.string("settings.contactUs"))
                                 .foregroundStyle(Color(.label))
                         }
                     }
 
                     HStack {
                         settingsIcon("info.circle.fill", color: .gray)
-                        Text("App Version")
+                        Text(loc.string("settings.appVersion"))
                         Spacer()
                         Text(appVersion)
                             .foregroundStyle(.secondary)
                     }
                 }
             }
-            .navigationTitle("Settings")
+            .navigationTitle(loc.string("settings.title"))
         }
     }
 

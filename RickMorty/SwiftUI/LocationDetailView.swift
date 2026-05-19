@@ -9,6 +9,7 @@ struct LocationDetailView: View {
     let location: RMLocation
     @State private var isFavorite: Bool
     @State private var appeared = false
+    private var loc = LocalizationManager.shared
 
     init(location: RMLocation) {
         self.location = location
@@ -40,9 +41,9 @@ struct LocationDetailView: View {
                     .padding(.horizontal, 20)
 
                 VStack(spacing: 12) {
-                    detailRow(icon: "building.2", title: "Type", value: location.type, index: 0)
-                    detailRow(icon: "sparkles", title: "Dimension", value: location.dimension, index: 1)
-                    detailRow(icon: "person.3", title: "Residents", value: "\(location.residents.count) resident(s)", index: 2)
+                    detailRow(icon: "building.2", title: loc.string("detail.type"), value: location.type, index: 0)
+                    detailRow(icon: "sparkles", title: loc.string("detail.dimension"), value: location.dimension, index: 1)
+                    detailRow(icon: "person.3", title: loc.string("detail.residents"), value: "\(location.residents.count) \(loc.string("detail.residents.count"))", index: 2)
                 }
                 .padding(.horizontal, 20)
 
@@ -63,7 +64,7 @@ struct LocationDetailView: View {
                         .foregroundStyle(.red)
                         .contentTransition(.symbolEffect(.replace))
                 }
-                .accessibilityLabel(isFavorite ? "Remove from favorites" : "Add to favorites")
+                .accessibilityLabel(isFavorite ? loc.string("a11y.removeFromFavorites") : loc.string("a11y.addToFavorites"))
             }
         }
         .background(Color(.systemBackground))

@@ -9,6 +9,7 @@ struct LocationsListView: View {
     @State private var viewModel = LocationsViewModel()
     @State private var searchText = ""
     @Namespace private var heroNamespace
+    private var loc = LocalizationManager.shared
 
     private let columns = [
         GridItem(.flexible(), spacing: 12),
@@ -65,11 +66,11 @@ struct LocationsListView: View {
 
     private var headerView: some View {
         VStack(spacing: 12) {
-            Text("Locations")
+            Text(loc.string("locations.title"))
                 .font(.system(size: 24, weight: .black))
                 .foregroundStyle(Color(.label))
 
-            searchBar(prompt: "Search locations")
+            searchBar(prompt: loc.string("locations.search"))
         }
         .padding(.top, 8)
         .padding(.bottom, 12)
@@ -136,10 +137,10 @@ struct LocationsListView: View {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 44))
                 .foregroundStyle(.secondary)
-            Text("No results for \"\(searchText)\"")
+            Text("\(loc.string("search.noResults")) \"\(searchText)\"")
                 .font(.headline)
                 .foregroundStyle(.secondary)
-            Text("Try a different search term")
+            Text(loc.string("search.tryDifferent"))
                 .font(.subheadline)
                 .foregroundStyle(.tertiary)
         }
@@ -152,10 +153,10 @@ struct LocationsListView: View {
             Image(systemName: "wifi.slash")
                 .font(.system(size: 50))
                 .foregroundStyle(.gray)
-            Text("No data available")
+            Text(loc.string("empty.noData"))
                 .font(.headline)
                 .foregroundStyle(.secondary)
-            Button("Retry") {
+            Button(loc.string("empty.retry")) {
                 Task { await viewModel.retry() }
             }
             .buttonStyle(.borderedProminent)

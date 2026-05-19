@@ -7,6 +7,7 @@ import SwiftUI
 
 struct FavoritesView: View {
     @State private var viewModel = FavoritesViewModel()
+    private var loc = LocalizationManager.shared
     private let columns = [
         GridItem(.flexible(), spacing: 12),
         GridItem(.flexible(), spacing: 12),
@@ -23,10 +24,10 @@ struct FavoritesView: View {
                         Image(systemName: "heart.slash")
                             .font(.system(size: 50))
                             .foregroundStyle(.gray)
-                        Text("No favorites yet")
+                        Text(loc.string("favorites.empty"))
                             .font(.headline)
                             .foregroundStyle(.secondary)
-                        Text("Tap the heart icon on any item to add it here")
+                        Text(loc.string("favorites.hint"))
                             .font(.subheadline)
                             .foregroundStyle(.tertiary)
                             .multilineTextAlignment(.center)
@@ -36,7 +37,7 @@ struct FavoritesView: View {
                     scrollContent
                 }
             }
-            .navigationTitle("Favorites")
+            .navigationTitle(loc.string("favorites.title"))
             .task {
                 await viewModel.loadAndRefresh()
             }
@@ -50,7 +51,7 @@ struct FavoritesView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 if !viewModel.favoriteCharacters.isEmpty {
-                    sectionHeader("Characters")
+                    sectionHeader(loc.string("tab.characters"))
                     LazyVGrid(columns: columns, spacing: 12) {
                         ForEach(viewModel.favoriteCharacters, id: \.id) { character in
                             NavigationLink(value: character) {
@@ -62,7 +63,7 @@ struct FavoritesView: View {
                 }
 
                 if !viewModel.favoriteLocations.isEmpty {
-                    sectionHeader("Locations")
+                    sectionHeader(loc.string("tab.locations"))
                     LazyVGrid(columns: columns, spacing: 12) {
                         ForEach(viewModel.favoriteLocations, id: \.id) { location in
                             NavigationLink(value: location) {
@@ -74,7 +75,7 @@ struct FavoritesView: View {
                 }
 
                 if !viewModel.favoriteEpisodes.isEmpty {
-                    sectionHeader("Episodes")
+                    sectionHeader(loc.string("tab.episodes"))
                     LazyVGrid(columns: columns, spacing: 12) {
                         ForEach(viewModel.favoriteEpisodes, id: \.id) { episode in
                             NavigationLink(value: episode) {

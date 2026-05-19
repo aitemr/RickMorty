@@ -9,6 +9,7 @@ struct EpisodeDetailView: View {
     let episode: RMEpisode
     @State private var isFavorite: Bool
     @State private var appeared = false
+    private var loc = LocalizationManager.shared
 
     init(episode: RMEpisode) {
         self.episode = episode
@@ -39,9 +40,9 @@ struct EpisodeDetailView: View {
                     .padding(.horizontal, 20)
 
                 VStack(spacing: 12) {
-                    detailRow(icon: "calendar", title: "Air Date", value: episode.airDate, index: 0)
-                    detailRow(icon: "film", title: "Episode Code", value: episode.episode, index: 1)
-                    detailRow(icon: "person.3", title: "Characters", value: "\(episode.characters.count) character(s)", index: 2)
+                    detailRow(icon: "calendar", title: loc.string("detail.airDate"), value: episode.airDate, index: 0)
+                    detailRow(icon: "film", title: loc.string("detail.episodeCode"), value: episode.episode, index: 1)
+                    detailRow(icon: "person.3", title: loc.string("detail.characters"), value: "\(episode.characters.count) \(loc.string("detail.characters.count"))", index: 2)
                 }
                 .padding(.horizontal, 20)
 
@@ -62,7 +63,7 @@ struct EpisodeDetailView: View {
                         .foregroundStyle(.red)
                         .contentTransition(.symbolEffect(.replace))
                 }
-                .accessibilityLabel(isFavorite ? "Remove from favorites" : "Add to favorites")
+                .accessibilityLabel(isFavorite ? loc.string("a11y.removeFromFavorites") : loc.string("a11y.addToFavorites"))
             }
         }
         .background(Color(.systemBackground))

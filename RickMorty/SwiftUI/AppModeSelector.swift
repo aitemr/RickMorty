@@ -8,6 +8,7 @@ import SwiftUI
 struct AppModeSelector: View {
     @AppStorage("useSwiftUI") private var useSwiftUI = true
     @AppStorage("hasSelectedMode") private var hasSelectedMode = false
+    private var loc = LocalizationManager.shared
 
     var body: some View {
         VStack(spacing: 32) {
@@ -18,19 +19,19 @@ struct AppModeSelector: View {
                     .font(.system(size: 44))
                     .foregroundStyle(Theme.accentSwiftUI)
 
-                Text("Rick and Morty")
+                Text(loc.string("modeSelector.title"))
                     .font(.system(size: 32, weight: .bold))
                     .foregroundStyle(Color(.label))
 
-                Text("Choose your interface")
+                Text(loc.string("modeSelector.subtitle"))
                     .font(.system(size: 16, weight: .medium))
                     .foregroundStyle(.secondary)
             }
 
             VStack(spacing: 16) {
                 modeCard(
-                    title: "SwiftUI",
-                    subtitle: "Modern declarative UI",
+                    title: loc.string("modeSelector.swiftui"),
+                    subtitle: loc.string("modeSelector.swiftui.desc"),
                     icon: "swift",
                     isSelected: true
                 ) {
@@ -39,8 +40,8 @@ struct AppModeSelector: View {
                 }
 
                 modeCard(
-                    title: "UIKit",
-                    subtitle: "Classic imperative UI",
+                    title: loc.string("modeSelector.uikit"),
+                    subtitle: loc.string("modeSelector.uikit.desc"),
                     icon: "hammer.fill",
                     isSelected: false
                 ) {
@@ -50,7 +51,7 @@ struct AppModeSelector: View {
             }
             .padding(.horizontal, 32)
 
-            Text("You can change this later in Settings")
+            Text(loc.string("modeSelector.changeLater"))
                 .font(.system(size: 13))
                 .foregroundStyle(.tertiary)
 
