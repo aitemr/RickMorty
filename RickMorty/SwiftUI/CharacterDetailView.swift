@@ -27,7 +27,7 @@ struct CharacterDetailView: View {
                     let offset = minY > 0 ? -minY : 0
                     let stretchHeight = minY > 0 ? height + minY : height
 
-                    ZStack(alignment: .topLeading) {
+                    ZStack {
                         CachedAsyncImage(urlString: character.image)
                             .frame(width: geo.size.width, height: stretchHeight)
                             .clipped()
@@ -41,9 +41,6 @@ struct CharacterDetailView: View {
                         )
                         .frame(width: geo.size.width, height: stretchHeight)
                         .offset(y: offset)
-
-                        statusBadge
-                            .padding(16)
                     }
                 }
                 .frame(height: 340)
@@ -64,6 +61,9 @@ struct CharacterDetailView: View {
         .ignoresSafeArea(.container, edges: .top)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .principal) {
+                statusBadge
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     FavoritesManager.shared.toggleCharacter(character.id)

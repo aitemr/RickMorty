@@ -7,7 +7,7 @@ import SwiftUI
 
 struct LocationsListView: View {
     @State private var viewModel = LocationsViewModel()
-    @State private var selectedFilter = 0
+    @State private var searchText = ""
     @Namespace private var heroNamespace
 
     private let columns = [
@@ -16,10 +16,11 @@ struct LocationsListView: View {
     ]
 
     private var filteredLocations: [RMLocation] {
-        switch selectedFilter {
-        case 1: return viewModel.locations.filter { $0.type == "Planet" }
-        case 2: return viewModel.locations.filter { $0.type != "Planet" }
-        default: return viewModel.locations
+        guard !searchText.isEmpty else { return viewModel.locations }
+        return viewModel.locations.filter {
+            $0.name.localizedCaseInsensitiveContains(searchText) ||
+            $0.type.localizedCaseInsensitiveContains(searchText) ||
+            $0.dimension.localizedCaseInsensitiveContains(searchText)
         }
     }
 
@@ -38,12 +39,19 @@ struct LocationsListView: View {
                         Spacer()
                         emptyStateView
                         Spacer()
+                    } else if !searchText.isEmpty && filteredLocations.isEmpty {
+                        Spacer()
+                        noSearchResultsView
+                        Spacer()
                     } else {
                         scrollContent
                     }
                 }
             }
             .background(Color(.systemGroupedBackground))
+            .onTapGesture {
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            }
             .navigationBarHidden(true)
             .task {
                 if viewModel.locations.isEmpty {
@@ -61,17 +69,33 @@ struct LocationsListView: View {
                 .font(.system(size: 24, weight: .black))
                 .foregroundStyle(Color(.label))
 
-            Picker("Filter", selection: $selectedFilter) {
-                Text("ALL").tag(0)
-                Text("PLANETS").tag(1)
-                Text("OTHER").tag(2)
-            }
-            .pickerStyle(.segmented)
-            .padding(.horizontal, 16)
+            searchBar(prompt: "Search locations")
         }
         .padding(.top, 8)
         .padding(.bottom, 12)
         .background(Color(.systemGroupedBackground))
+    }
+
+    private func searchBar(prompt: String) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass")
+                .foregroundStyle(.secondary)
+            TextField(prompt, text: $searchText)
+                .textFieldStyle(.plain)
+                .autocorrectionDisabled()
+            if !searchText.isEmpty {
+                Button {
+                    searchText = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .padding(10)
+        .background(Color(.tertiarySystemFill))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal, 16)
     }
 
     // MARK: - Content
@@ -98,9 +122,26 @@ struct LocationsListView: View {
                     .padding(.vertical, 16)
             }
         }
+        .scrollDismissesKeyboard(.immediately)
         .navigationDestination(for: RMLocation.self) { location in
             LocationDetailView(location: location)
                 .navigationTransition(.zoom(sourceID: location.id, in: heroNamespace))
+        }
+    }
+
+    // MARK: - No Search Results
+
+    private var noSearchResultsView: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 44))
+                .foregroundStyle(.secondary)
+            Text("No results for \"\(searchText)\"")
+                .font(.headline)
+                .foregroundStyle(.secondary)
+            Text("Try a different search term")
+                .font(.subheadline)
+                .foregroundStyle(.tertiary)
         }
     }
 

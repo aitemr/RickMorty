@@ -7,7 +7,7 @@ import SwiftUI
 
 struct EpisodesListView: View {
     @State private var viewModel = EpisodesViewModel()
-    @State private var selectedFilter = 0
+    @State private var searchText = ""
     @Namespace private var heroNamespace
 
     private let columns = [
@@ -16,11 +16,11 @@ struct EpisodesListView: View {
     ]
 
     private var filteredEpisodes: [RMEpisode] {
-        switch selectedFilter {
-        case 1: return viewModel.episodes.filter { $0.episode.hasPrefix("S01") }
-        case 2: return viewModel.episodes.filter { $0.episode.hasPrefix("S02") }
-        case 3: return viewModel.episodes.filter { !$0.episode.hasPrefix("S01") && !$0.episode.hasPrefix("S02") }
-        default: return viewModel.episodes
+        guard !searchText.isEmpty else { return viewModel.episodes }
+        return viewModel.episodes.filter {
+            $0.name.localizedCaseInsensitiveContains(searchText) ||
+            $0.episode.localizedCaseInsensitiveContains(searchText) ||
+            $0.airDate.localizedCaseInsensitiveContains(searchText)
         }
     }
 
@@ -39,12 +39,19 @@ struct EpisodesListView: View {
                         Spacer()
                         emptyStateView
                         Spacer()
+                    } else if !searchText.isEmpty && filteredEpisodes.isEmpty {
+                        Spacer()
+                        noSearchResultsView
+                        Spacer()
                     } else {
                         scrollContent
                     }
                 }
             }
             .background(Color(.systemGroupedBackground))
+            .onTapGesture {
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            }
             .navigationBarHidden(true)
             .task {
                 if viewModel.episodes.isEmpty {
@@ -62,18 +69,33 @@ struct EpisodesListView: View {
                 .font(.system(size: 24, weight: .black))
                 .foregroundStyle(Color(.label))
 
-            Picker("Filter", selection: $selectedFilter) {
-                Text("ALL").tag(0)
-                Text("S01").tag(1)
-                Text("S02").tag(2)
-                Text("S03+").tag(3)
-            }
-            .pickerStyle(.segmented)
-            .padding(.horizontal, 16)
+            searchBar(prompt: "Search episodes")
         }
         .padding(.top, 8)
         .padding(.bottom, 12)
         .background(Color(.systemGroupedBackground))
+    }
+
+    private func searchBar(prompt: String) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass")
+                .foregroundStyle(.secondary)
+            TextField(prompt, text: $searchText)
+                .textFieldStyle(.plain)
+                .autocorrectionDisabled()
+            if !searchText.isEmpty {
+                Button {
+                    searchText = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .padding(10)
+        .background(Color(.tertiarySystemFill))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal, 16)
     }
 
     // MARK: - Content
@@ -100,9 +122,26 @@ struct EpisodesListView: View {
                     .padding(.vertical, 16)
             }
         }
+        .scrollDismissesKeyboard(.immediately)
         .navigationDestination(for: RMEpisode.self) { episode in
             EpisodeDetailView(episode: episode)
                 .navigationTransition(.zoom(sourceID: episode.id, in: heroNamespace))
+        }
+    }
+
+    // MARK: - No Search Results
+
+    private var noSearchResultsView: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 44))
+                .foregroundStyle(.secondary)
+            Text("No results for \"\(searchText)\"")
+                .font(.headline)
+                .foregroundStyle(.secondary)
+            Text("Try a different search term")
+                .font(.subheadline)
+                .foregroundStyle(.tertiary)
         }
     }
 
