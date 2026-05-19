@@ -1,6 +1,6 @@
 # Rick and Morty — Dimension Guide
 
-> iOS-приложение для просмотра персонажей, локаций и эпизодов мультсериала «Рик и Морти».  
+> iOS-приложение для просмотра персонажей, локаций и эпизодов мультсериала «Рик и Морти».
 > Данные загружаются из открытого [Rick and Morty API](https://rickandmortyapi.com/api).
 
 ---
@@ -9,12 +9,15 @@
 
 - **Два режима интерфейса** — UIKit (MVC) и SwiftUI (MVVM) с выбором при первом запуске
 - **Пагинация** — бесконечная прокрутка с загрузкой страниц по мере скролла
-- **Избранное** — добавление персонажей, локаций и эпизодов в избранное
+- **Избранное** — добавление персонажей, локаций и эпизодов в избранное (кнопка в навигационном баре)
+- **Поиск** — встроенные поля поиска на страницах персонажей, локаций и эпизодов с пустым состоянием
+- **Фильтрация** — сегментированный контрол на странице персонажей (ALL / ALIVE / DEAD)
+- **Локализация** — поддержка английского и русского языков с переключением в настройках
 - **Анимации** — zoom-переход к деталям, параллакс-заголовок, spring-анимации
-- **Фильтрация** — сегментированные контролы для фильтрации по статусу, типу, сезону
 - **Тёмная тема** — полная поддержка Dark Mode
 - **Accessibility** — метки доступности на всех интерактивных элементах
-- **Launch Screen** — анимированный экран загрузки с логотипом приложения
+- **Launch Screen** — анимированный экран загрузки с порталом и логотипом
+- **Статус-бейдж** — статус персонажа (Alive/Dead/Unknown) отображается в центре навигационного бара
 
 ---
 
@@ -42,7 +45,7 @@
 
 ```
 RickMorty/
-├── RickMortyApp.swift              — Точка входа, выбор UIKit/SwiftUI
+├── RickMortyApp.swift              — Точка входа, выбор UIKit/SwiftUI, Launch Screen
 ├── Theme.swift                     — Централизованные цвета темы
 │
 ├── Models/
@@ -53,7 +56,8 @@ RickMorty/
 ├── Services/
 │   ├── NetworkService.swift        — HTTP-запросы к API с пагинацией
 │   ├── ImageLoader.swift           — Асинхронная загрузка и кэш (NSCache)
-│   └── FavoritesManager.swift      — Управление избранным (UserDefaults)
+│   ├── FavoritesManager.swift      — Управление избранным (UserDefaults)
+│   └── LocalizationManager.swift   — Локализация EN/RU (@Observable)
 │
 ├── Controllers/                    — UIKit вью-контроллеры
 │   ├── MainTabBarController.swift
@@ -72,27 +76,28 @@ RickMorty/
 │   └── EpisodeCell.swift
 │
 └── SwiftUI/                        — SwiftUI реализация
-    ├── SwiftUIMainTabView.swift
-    ├── AppModeSelector.swift
-    ├── CharactersListView.swift
-    ├── LocationsListView.swift
-    ├── EpisodesListView.swift
-    ├── CharacterDetailView.swift
-    ├── LocationDetailView.swift
-    ├── EpisodeDetailView.swift
-    ├── FavoritesView.swift
-    ├── SettingsView.swift
+    ├── SwiftUIMainTabView.swift    — TabView с 5 вкладками
+    ├── AppModeSelector.swift       — Экран выбора режима
+    ├── LaunchScreenView.swift      — Анимированный экран загрузки
+    ├── CharactersListView.swift    — Список персонажей + фильтр + поиск
+    ├── LocationsListView.swift     — Список локаций + поиск
+    ├── EpisodesListView.swift      — Список эпизодов + поиск
+    ├── CharacterDetailView.swift   — Детали персонажа + параллакс
+    ├── LocationDetailView.swift    — Детали локации
+    ├── EpisodeDetailView.swift     — Детали эпизода
+    ├── FavoritesView.swift         — Избранное (секции по типам)
+    ├── SettingsView.swift          — Настройки (режим, язык, общие)
     ├── ViewModels/
     │   ├── CharactersViewModel.swift
     │   ├── LocationsViewModel.swift
     │   ├── EpisodesViewModel.swift
     │   └── FavoritesViewModel.swift
     └── Components/
-        ├── CachedAsyncImage.swift
-        ├── CharacterCardView.swift
-        ├── LocationCardView.swift
-        ├── EpisodeCardView.swift
-        └── InfoRowView.swift
+        ├── CachedAsyncImage.swift  — Обёртка для загрузки изображений
+        ├── CharacterCardView.swift — Карточка персонажа
+        ├── LocationCardView.swift  — Карточка локации
+        ├── EpisodeCardView.swift   — Карточка эпизода
+        └── InfoRowView.swift       — Строка информации
 ```
 
 ---
@@ -120,6 +125,22 @@ RickMorty/
 
 ---
 
+## Поиск
+
+На каждой странице списка встроено поле поиска в кастомном заголовке:
+
+| Страница | Поиск по полям |
+|----------|----------------|
+| Персонажи | Имя, вид, локация |
+| Локации | Название, тип, измерение |
+| Эпизоды | Название, код эпизода, дата выхода |
+
+- Клавиатура скрывается при скролле (`.scrollDismissesKeyboard(.immediately)`)
+- Клавиатура скрывается при тапе вне поля ввода
+- Пустое состояние поиска: иконка + «Нет результатов для "..."» + подсказка
+
+---
+
 ## Система избранного
 
 `FavoritesManager` хранит ID в `UserDefaults` и отправляет `Notification` при изменении.
@@ -130,18 +151,47 @@ RickMorty/
 | Локации | `isLocationFavorite(_:)`, `toggleLocation(_:)` |
 | Эпизоды | `isEpisodeFavorite(_:)`, `toggleEpisode(_:)` |
 
+Кнопка избранного (сердце) расположена в **навигационном баре** (`.toolbar`) на всех страницах деталей.
+
+---
+
+## Локализация
+
+`LocalizationManager` — синглтон с макросом `@Observable`.
+
+| Язык | Код |
+|------|-----|
+| English (по умолчанию) | `en` |
+| Русский | `ru` |
+
+- Язык хранится в `UserDefaults` под ключом `"appLanguage"`
+- Переключение в **Настройки → Интерфейс → Язык**
+- Изменения применяются мгновенно без перезапуска
+- Локализованы: вкладки, заголовки, фильтры, поиск, детали, избранное, настройки, экран выбора режима
+
 ---
 
 ## Навигация
 
 ### UIKit
-`MainTabBarController` → 5 вкладок, каждая в `UINavigationController`.  
+`MainTabBarController` → 5 вкладок, каждая в `UINavigationController`.
 Переход к деталям через `pushViewController`.
 
 ### SwiftUI
-`SwiftUIMainTabView` → 5 вкладок через `TabView`.  
-Навигация через `NavigationStack` + `.navigationDestination(for:)`.  
+`SwiftUIMainTabView` → 5 вкладок через `TabView`.
+Навигация через `NavigationStack` + `.navigationDestination(for:)`.
 Zoom-переход: `.matchedTransitionSource` + `.navigationTransition(.zoom)`.
+
+---
+
+## Launch Screen
+
+Анимированный экран загрузки (`LaunchScreenView`):
+- Градиентный фон тёмно-зелёного цвета
+- Концентрические кольца портала с вращением
+- Светящийся круг с надписью «RM»
+- Появление заголовка «The Rick and Morty» + «DIMENSION GUIDE»
+- Автоматическое исчезновение через 1.8 секунд с fade-анимацией
 
 ---
 
