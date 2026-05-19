@@ -157,6 +157,12 @@ final class EpisodesViewController: UIViewController {
 // MARK: - UICollectionViewDelegate
 
 extension EpisodesViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let episode = dataSource.itemIdentifier(for: indexPath) else { return }
+        let detailVC = EpisodeDetailViewController(episode: episode)
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
+
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height

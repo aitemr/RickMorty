@@ -171,6 +171,12 @@ final class CharactersViewController: UIViewController {
 // MARK: - UICollectionViewDelegate
 
 extension CharactersViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let character = dataSource.itemIdentifier(for: indexPath) else { return }
+        let detailVC = CharacterDetailViewController(character: character)
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
+
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height

@@ -38,7 +38,23 @@ final class MainTabBarController: UITabBarController {
             selectedImage: UIImage(systemName: "play.tv.fill")
         )
 
-        viewControllers = [charactersNav, locationsNav, episodesNav]
+        let favoritesVC = FavoritesViewController()
+        let favoritesNav = UINavigationController(rootViewController: favoritesVC)
+        favoritesNav.tabBarItem = UITabBarItem(
+            title: "Favorites",
+            image: UIImage(systemName: "heart"),
+            selectedImage: UIImage(systemName: "heart.fill")
+        )
+
+        let settingsVC = SettingsViewController()
+        let settingsNav = UINavigationController(rootViewController: settingsVC)
+        settingsNav.tabBarItem = UITabBarItem(
+            title: "Settings",
+            image: UIImage(systemName: "gearshape"),
+            selectedImage: UIImage(systemName: "gearshape.fill")
+        )
+
+        viewControllers = [charactersNav, locationsNav, episodesNav, favoritesNav, settingsNav]
         selectedIndex = 0
     }
 

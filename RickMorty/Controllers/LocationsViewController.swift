@@ -157,6 +157,12 @@ final class LocationsViewController: UIViewController {
 // MARK: - UICollectionViewDelegate
 
 extension LocationsViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let location = dataSource.itemIdentifier(for: indexPath) else { return }
+        let detailVC = LocationDetailViewController(location: location)
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
+
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
