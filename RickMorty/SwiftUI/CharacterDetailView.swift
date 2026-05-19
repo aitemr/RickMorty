@@ -42,12 +42,8 @@ struct CharacterDetailView: View {
                         .frame(width: geo.size.width, height: stretchHeight)
                         .offset(y: offset)
 
-                        HStack {
-                            statusBadge
-                            Spacer()
-                            favoriteButton
-                        }
-                        .padding(16)
+                        statusBadge
+                            .padding(16)
                     }
                 }
                 .frame(height: 340)
@@ -67,6 +63,22 @@ struct CharacterDetailView: View {
         }
         .ignoresSafeArea(.container, edges: .top)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    FavoritesManager.shared.toggleCharacter(character.id)
+                    withAnimation(.spring(duration: 0.3, bounce: 0.4)) {
+                        isFavorite.toggle()
+                    }
+                } label: {
+                    Image(systemName: isFavorite ? "heart.fill" : "heart")
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundStyle(.red)
+                        .contentTransition(.symbolEffect(.replace))
+                }
+                .accessibilityLabel(isFavorite ? "Remove from favorites" : "Add to favorites")
+            }
+        }
         .background(Color(.systemBackground))
         .onAppear {
             withAnimation(.spring(duration: 0.5, bounce: 0.2)) {
@@ -122,24 +134,6 @@ struct CharacterDetailView: View {
             .padding(.vertical, 6)
             .background(statusColor)
             .clipShape(Capsule())
-    }
-
-    private var favoriteButton: some View {
-        Button {
-            FavoritesManager.shared.toggleCharacter(character.id)
-            withAnimation(.spring(duration: 0.3, bounce: 0.4)) {
-                isFavorite.toggle()
-            }
-        } label: {
-            Image(systemName: isFavorite ? "heart.fill" : "heart")
-                .font(.system(size: 24, weight: .medium))
-                .foregroundStyle(.red)
-                .scaleEffect(isFavorite ? 1.0 : 0.9)
-                .contentTransition(.symbolEffect(.replace))
-                .padding(8)
-                .background(.ultraThinMaterial, in: Circle())
-        }
-        .accessibilityLabel(isFavorite ? "Remove from favorites" : "Add to favorites")
     }
 
     private var statusColor: Color {
