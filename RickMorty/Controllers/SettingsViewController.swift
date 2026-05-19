@@ -14,6 +14,8 @@ final class SettingsViewController: UIViewController {
         let icon: String
         let iconColor: UIColor
         let title: String
+        var accessoryText: String? = nil
+        var showsDisclosure: Bool = true
         let action: () -> Void
     }
 
@@ -50,6 +52,12 @@ final class SettingsViewController: UIViewController {
 
     private func buildSections() {
         sections = [
+            ("Interface", [
+                SettingsItem(icon: "paintbrush.fill", iconColor: .systemPurple, title: "UI Mode", accessoryText: "UIKit", showsDisclosure: false) { },
+                SettingsItem(icon: "arrow.triangle.2.circlepath", iconColor: Theme.accentColor, title: "Switch to SwiftUI") { [weak self] in
+                    self?.switchToSwiftUI()
+                },
+            ]),
             ("General", [
                 SettingsItem(icon: "square.and.arrow.up", iconColor: .systemBlue, title: "Share App") { [weak self] in
                     self?.shareApp()
@@ -155,6 +163,10 @@ final class SettingsViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
+
+    private func switchToSwiftUI() {
+        UserDefaults.standard.set(true, forKey: "useSwiftUI")
+    }
 }
 
 // MARK: - UITableViewDataSource
@@ -180,8 +192,16 @@ extension SettingsViewController: UITableViewDataSource {
         config.text = item.title
         config.image = UIImage(systemName: item.icon)
         config.imageProperties.tintColor = item.iconColor
+
+        if let accessoryText = item.accessoryText {
+            config.secondaryText = accessoryText
+            config.prefersSideBySideTextAndSecondaryText = true
+            config.secondaryTextProperties.color = .secondaryLabel
+        }
+
         cell.contentConfiguration = config
-        cell.accessoryType = .disclosureIndicator
+        cell.accessoryType = item.showsDisclosure ? .disclosureIndicator : .none
+        cell.selectionStyle = item.showsDisclosure ? .default : .none
 
         return cell
     }
