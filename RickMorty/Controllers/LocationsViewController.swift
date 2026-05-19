@@ -33,6 +33,59 @@ final class LocationsViewController: UIViewController {
         return label
     }()
 
+    private let loadingSpinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView(style: .large)
+        spinner.hidesWhenStopped = true
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        return spinner
+    }()
+
+    private let emptyStateView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isHidden = true
+
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.alignment = .center
+        stack.spacing = 12
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
+        let config = UIImage.SymbolConfiguration(pointSize: 48, weight: .light)
+        let imageView = UIImageView(image: UIImage(systemName: "wifi.slash", withConfiguration: config))
+        imageView.tintColor = .secondaryLabel
+
+        let label = UILabel()
+        label.text = "No data available"
+        label.font = .systemFont(ofSize: 16, weight: .medium)
+        label.textColor = .secondaryLabel
+
+        let button = UIButton(type: .system)
+        button.setTitle("Retry", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
+        button.tintColor = Theme.accentColor
+        button.tag = 100
+
+        stack.addArrangedSubview(imageView)
+        stack.addArrangedSubview(label)
+        stack.addArrangedSubview(button)
+        view.addSubview(stack)
+
+        NSLayoutConstraint.activate([
+            stack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            stack.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+        ])
+
+        return view
+    }()
+
+    private let paginationSpinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView(style: .medium)
+        spinner.hidesWhenStopped = true
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        return spinner
+    }()
+
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
@@ -42,6 +95,7 @@ final class LocationsViewController: UIViewController {
 
         setupHeader()
         setupCollectionView()
+        setupLoadingStates()
         configureDataSource()
         loadLocations()
     }
@@ -74,6 +128,37 @@ final class LocationsViewController: UIViewController {
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
+    }
+
+    private func setupLoadingStates() {
+        view.addSubview(loadingSpinner)
+        view.addSubview(emptyStateView)
+        view.addSubview(paginationSpinner)
+
+        NSLayoutConstraint.activate([
+            loadingSpinner.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loadingSpinner.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+
+            emptyStateView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor),
+            emptyStateView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            emptyStateView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            emptyStateView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+
+            paginationSpinner.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            paginationSpinner.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8),
+        ])
+
+        if let retryButton = emptyStateView.viewWithTag(100) as? UIButton {
+            retryButton.addTarget(self, action: #selector(retryTapped), for: .touchUpInside)
+        }
+    }
+
+    @objc private func retryTapped() {
+        currentPage = 1
+        totalPages = 1
+        locations.removeAll()
+        emptyStateView.isHidden = true
+        loadLocations()
     }
 
     private func createLayout() -> UICollectionViewCompositionalLayout {
@@ -127,6 +212,14 @@ final class LocationsViewController: UIViewController {
         guard !isLoading, currentPage <= totalPages else { return }
         isLoading = true
 
+        let isFirstPage = currentPage == 1
+        if isFirstPage {
+            loadingSpinner.startAnimating()
+            collectionView.isHidden = true
+        } else {
+            paginationSpinner.startAnimating()
+        }
+
         Task {
             do {
                 let response = try await NetworkService.shared.fetchLocations(page: currentPage)
@@ -134,23 +227,23 @@ final class LocationsViewController: UIViewController {
                 locations.append(contentsOf: response.results)
                 applySnapshot()
                 currentPage += 1
+
+                if isFirstPage {
+                    loadingSpinner.stopAnimating()
+                    collectionView.isHidden = false
+                } else {
+                    paginationSpinner.stopAnimating()
+                }
             } catch {
-                if locations.isEmpty {
-                    showError(error)
+                if isFirstPage {
+                    loadingSpinner.stopAnimating()
+                    emptyStateView.isHidden = false
+                } else {
+                    paginationSpinner.stopAnimating()
                 }
             }
             isLoading = false
         }
-    }
-
-    private func showError(_ error: Error) {
-        let alert = UIAlertController(
-            title: "Error",
-            message: error.localizedDescription,
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
     }
 }
 

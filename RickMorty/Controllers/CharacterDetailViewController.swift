@@ -173,8 +173,16 @@ final class CharacterDetailViewController: UIViewController {
     }
 
     private func loadImage() {
+        let config = UIImage.SymbolConfiguration(pointSize: 60, weight: .light)
+        heroImageView.image = UIImage(systemName: "person.crop.circle", withConfiguration: config)
+        heroImageView.tintColor = .systemGray3
+        heroImageView.contentMode = .scaleAspectFit
+
         Task {
-            heroImageView.image = await ImageLoader.shared.loadImage(from: character.image)
+            if let image = await ImageLoader.shared.loadImage(from: character.image) {
+                heroImageView.contentMode = .scaleAspectFill
+                heroImageView.image = image
+            }
         }
     }
 

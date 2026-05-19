@@ -3,13 +3,6 @@
 //  RickMorty
 //
 
-// TODO:
-// 1. add placeholder for them empty images
-// 2. add loader, empty state pages when no data
-// 3. loading when pagation
-// 4 make on swiftui
-// 5. make refatoring, make with HIG & Apple architecture guidlines
-// 6. add documentation how project works in russian
 @preconcurrency import UIKit
 
 nonisolated private enum CharacterSection: Int, Hashable, Sendable {
@@ -55,7 +48,7 @@ final class CharactersViewController: UIViewController {
                 string: "Rick and Morty",
                 attributes: [
                     .font: italicBoldFont,
-                    .foregroundColor: UIColor(red: 0.2, green: 0.5, blue: 0.3, alpha: 1.0),
+                    .foregroundColor: Theme.accentColor,
                 ]
             ))
         } else {
@@ -63,7 +56,7 @@ final class CharactersViewController: UIViewController {
                 string: "Rick and Morty",
                 attributes: [
                     .font: UIFont.systemFont(ofSize: 24, weight: .black),
-                    .foregroundColor: UIColor(red: 0.2, green: 0.5, blue: 0.3, alpha: 1.0),
+                    .foregroundColor: Theme.accentColor,
                 ]
             ))
         }
@@ -89,8 +82,7 @@ final class CharactersViewController: UIViewController {
         sc.selectedSegmentIndex = 0
         sc.translatesAutoresizingMaskIntoConstraints = false
 
-        let greenColor = UIColor(red: 0.2, green: 0.5, blue: 0.3, alpha: 1.0)
-        sc.selectedSegmentTintColor = greenColor
+        sc.selectedSegmentTintColor = Theme.accentColor
         sc.setTitleTextAttributes([
             .foregroundColor: UIColor.white,
             .font: UIFont.systemFont(ofSize: 13, weight: .bold),
@@ -103,6 +95,60 @@ final class CharactersViewController: UIViewController {
         return sc
     }()
 
+    private let loadingSpinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView(style: .large)
+        spinner.hidesWhenStopped = true
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        return spinner
+    }()
+
+    private let emptyStateView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isHidden = true
+
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.alignment = .center
+        stack.spacing = 12
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
+        let config = UIImage.SymbolConfiguration(pointSize: 48, weight: .light)
+        let imageView = UIImageView(image: UIImage(systemName: "wifi.slash", withConfiguration: config))
+        imageView.tintColor = .secondaryLabel
+
+        let label = UILabel()
+        label.text = "No data available"
+        label.font = .systemFont(ofSize: 16, weight: .medium)
+        label.textColor = .secondaryLabel
+        label.textAlignment = .center
+
+        let button = UIButton(type: .system)
+        button.setTitle("Retry", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
+        button.tintColor = Theme.accentColor
+        button.tag = 100
+
+        stack.addArrangedSubview(imageView)
+        stack.addArrangedSubview(label)
+        stack.addArrangedSubview(button)
+        view.addSubview(stack)
+
+        NSLayoutConstraint.activate([
+            stack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            stack.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+        ])
+
+        return view
+    }()
+
+    private let paginationSpinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView(style: .medium)
+        spinner.hidesWhenStopped = true
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        return spinner
+    }()
+
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
@@ -112,6 +158,7 @@ final class CharactersViewController: UIViewController {
 
         setupHeader()
         setupCollectionView()
+        setupLoadingStates()
         configureDataSource()
         loadCharacters()
     }
@@ -150,6 +197,40 @@ final class CharactersViewController: UIViewController {
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
+    }
+
+    private func setupLoadingStates() {
+        view.addSubview(loadingSpinner)
+        view.addSubview(emptyStateView)
+
+        // Pagination spinner below collection view
+        view.addSubview(paginationSpinner)
+
+        NSLayoutConstraint.activate([
+            loadingSpinner.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loadingSpinner.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+
+            emptyStateView.topAnchor.constraint(equalTo: segmentedControl.bottomAnchor),
+            emptyStateView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            emptyStateView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            emptyStateView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+
+            paginationSpinner.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            paginationSpinner.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8),
+        ])
+
+        // Wire retry button
+        if let retryButton = emptyStateView.viewWithTag(100) as? UIButton {
+            retryButton.addTarget(self, action: #selector(retryTapped), for: .touchUpInside)
+        }
+    }
+
+    @objc private func retryTapped() {
+        currentPage = 1
+        totalPages = 1
+        characters.removeAll()
+        emptyStateView.isHidden = true
+        loadCharacters()
     }
 
     private func createLayout() -> UICollectionViewCompositionalLayout {
@@ -203,6 +284,14 @@ final class CharactersViewController: UIViewController {
         guard !isLoading, currentPage <= totalPages else { return }
         isLoading = true
 
+        let isFirstPage = currentPage == 1
+        if isFirstPage {
+            loadingSpinner.startAnimating()
+            collectionView.isHidden = true
+        } else {
+            paginationSpinner.startAnimating()
+        }
+
         Task {
             do {
                 let response = try await NetworkService.shared.fetchCharacters(page: currentPage)
@@ -210,23 +299,23 @@ final class CharactersViewController: UIViewController {
                 characters.append(contentsOf: response.results)
                 applySnapshot()
                 currentPage += 1
+
+                if isFirstPage {
+                    loadingSpinner.stopAnimating()
+                    collectionView.isHidden = false
+                } else {
+                    paginationSpinner.stopAnimating()
+                }
             } catch {
-                if characters.isEmpty {
-                    showError(error)
+                if isFirstPage {
+                    loadingSpinner.stopAnimating()
+                    emptyStateView.isHidden = false
+                } else {
+                    paginationSpinner.stopAnimating()
                 }
             }
             isLoading = false
         }
-    }
-
-    private func showError(_ error: Error) {
-        let alert = UIAlertController(
-            title: "Error",
-            message: error.localizedDescription,
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
     }
 }
 

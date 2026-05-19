@@ -25,7 +25,7 @@ final class LocationCell: UICollectionViewCell {
 
     private let iconContainer: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(red: 0.2, green: 0.5, blue: 0.3, alpha: 0.1)
+        view.backgroundColor = Theme.accentBackground
         view.layer.cornerRadius = 24
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -34,7 +34,7 @@ final class LocationCell: UICollectionViewCell {
     private let iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "globe.americas.fill")
-        imageView.tintColor = .systemBlue
+        imageView.tintColor = Theme.accentColor
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
@@ -69,7 +69,7 @@ final class LocationCell: UICollectionViewCell {
     private let residentsLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 11, weight: .medium)
-        label.textColor = UIColor(red: 0.2, green: 0.5, blue: 0.3, alpha: 1.0)
+        label.textColor = Theme.accentColor
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()

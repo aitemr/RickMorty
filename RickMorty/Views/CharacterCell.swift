@@ -134,20 +134,32 @@ final class CharacterCell: UICollectionViewCell {
         }
     }
 
+    private static let placeholderImage: UIImage? = {
+        let config = UIImage.SymbolConfiguration(pointSize: 40, weight: .light)
+        return UIImage(systemName: "person.crop.circle", withConfiguration: config)
+    }()
+
     private func loadImage(urlString: String) {
         currentImageURL = urlString
-        characterImageView.image = nil
+        characterImageView.image = Self.placeholderImage
+        characterImageView.tintColor = .systemGray3
+        characterImageView.contentMode = .scaleAspectFit
 
         Task {
             let image = await ImageLoader.shared.loadImage(from: urlString)
             guard currentImageURL == urlString else { return }
-            characterImageView.image = image
+            if let image {
+                characterImageView.contentMode = .scaleAspectFill
+                characterImageView.image = image
+            }
         }
     }
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        characterImageView.image = nil
+        characterImageView.image = Self.placeholderImage
+        characterImageView.tintColor = .systemGray3
+        characterImageView.contentMode = .scaleAspectFit
         currentImageURL = nil
         nameLabel.text = nil
     }

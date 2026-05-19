@@ -27,7 +27,6 @@ final class ImageLoader {
         do {
             let (data, _) = try await session.data(from: url)
             guard let image = UIImage(data: data) else { return nil }
-            cache.object(forKey: key)
             cache.setObject(image, forKey: key)
             return image
         } catch {

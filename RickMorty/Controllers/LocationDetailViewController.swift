@@ -25,7 +25,7 @@ final class LocationDetailViewController: UIViewController {
 
     private let iconContainer: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(red: 0.2, green: 0.5, blue: 0.3, alpha: 0.1)
+        view.backgroundColor = Theme.accentBackground
         view.layer.cornerRadius = 40
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -34,7 +34,7 @@ final class LocationDetailViewController: UIViewController {
     private let iconImageView: UIImageView = {
         let iv = UIImageView()
         iv.image = UIImage(systemName: "globe.americas.fill")
-        iv.tintColor = UIColor(red: 0.2, green: 0.5, blue: 0.3, alpha: 1.0)
+        iv.tintColor = Theme.accentColor
         iv.contentMode = .scaleAspectFit
         iv.translatesAutoresizingMaskIntoConstraints = false
         return iv

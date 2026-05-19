@@ -308,7 +308,7 @@ final class FavLocationCell: UICollectionViewCell {
     private let iconView: UIImageView = {
         let iv = UIImageView()
         iv.image = UIImage(systemName: "globe.americas.fill")
-        iv.tintColor = UIColor(red: 0.2, green: 0.5, blue: 0.3, alpha: 1.0)
+        iv.tintColor = Theme.accentColor
         iv.contentMode = .scaleAspectFit
         iv.translatesAutoresizingMaskIntoConstraints = false
         return iv
@@ -396,7 +396,7 @@ final class FavEpisodeCell: UICollectionViewCell {
         label.font = .systemFont(ofSize: 12, weight: .bold)
         label.textColor = .white
         label.textAlignment = .center
-        label.backgroundColor = UIColor(red: 0.2, green: 0.5, blue: 0.3, alpha: 1.0)
+        label.backgroundColor = Theme.accentColor
         label.layer.cornerRadius = 8
         label.clipsToBounds = true
         label.translatesAutoresizingMaskIntoConstraints = false

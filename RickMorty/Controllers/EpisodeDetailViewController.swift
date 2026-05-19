@@ -28,7 +28,7 @@ final class EpisodeDetailViewController: UIViewController {
         label.font = .systemFont(ofSize: 18, weight: .bold)
         label.textColor = .white
         label.textAlignment = .center
-        label.backgroundColor = UIColor(red: 0.2, green: 0.5, blue: 0.3, alpha: 1.0)
+        label.backgroundColor = Theme.accentColor
         label.layer.cornerRadius = 16
         label.clipsToBounds = true
         label.translatesAutoresizingMaskIntoConstraints = false
