@@ -300,4 +300,4 @@ enum Theme {
 
 ## Автор
 
-Islam Temirbek — [@islamtemirbek](https://github.com/islamtemirbek)
+Islam Temirbek @telegram — [@aitemr](https://t.me/aitemr)
